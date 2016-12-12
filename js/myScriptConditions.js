@@ -12,7 +12,7 @@
 
 // Exemple concret avec les soucis de nico
 var joins = true;
-var permis = false;
+var permis = true;
 var firstname = "Nico";
 var amande = 10000;
 console.log(joins + " " + permis + " " + firstname + " " + amande); // J'affiche les variables pour savoir si les résultats sont bons
@@ -23,7 +23,7 @@ if (firstname == "Nico" && joins == true && permis == true) { // Là je dis : Ni
 } else if (firstname == "Nico" && joins == false && permis == true) { // Là je dis tu n'as pas fumé et il a le permis
     console.log("La classe mon pote, on va pouvoir se taper une bonne partie de call of duty ce soir \;)")
 } else { // La c'est dans le dernier cas possible
-    console.log("T'as plus ton permis et tu conduits... Fais gaffe putain tu peux avec une grosse amande !!")
+    console.log("T'as plus ton permis et tu conduits... Fais gaffe putain tu peux avoir une grosse amande !!")
 }
 // A savoir qu'il est possible de faire des autres cas en rajoutant un else if avec d'autres conditions, comme par exemple qu'il a fumé et qu'il n'a plus le permis
 
@@ -44,17 +44,36 @@ if (speed <= 50) {
 
 /* Syntaxe d'une condition SWITCH
  * -------------------------------------------------------------
- * SWITCH ( variable ) {
+ * /!\Si on oublie un simple ' break; ' l'instruction 
+ * continuera jusqu'au prochain ' break; ' ou jusqu'au cas 
+ * ' default '.
+ * -------------------------------------------------------------
+ * // Je définis ici pour l'exemple une variable qui permettra
+ * // d'afficher comme résultat finale le cas contenant : "valeur3"
+ * var variable = "valeur3";
  * 
- *      case "valeur1": // cas 1
+ * SWITCH ( variable || expression ) {
+ * 
+ *      // cas 1
+ *      case "valeur1":
  *          code ici...;
  *          break;
  * 
+ *      // cas 2
  *      case "valeur2": // cas 2
  *          code ici...;
  *          break;
  * 
- *      case "valeur3": // cas 3
+ *      // cas 3
+ *      case "valeur3":
+ *          code ici...;
+ *          break;
+ * 
+ *      // A savoir qu'il est également possible de combiner 2 cas ensemble
+ *      // cas 4 OU cas 5
+ * 
+ *      case "valeur4": 
+ *      case "valeur5":
  *          code ici...;
  *          break;
  * 
@@ -66,7 +85,7 @@ if (speed <= 50) {
 
 // Exemple d'un switch avec des couleurs
 console.log("------------------ Exemple N°3 --------------------");
-var couleurPref = "blue";
+var couleurPref = "gris";
 
 switch (couleurPref) {
     case "yellow":
@@ -74,6 +93,10 @@ switch (couleurPref) {
         break;
     case "blue":
         console.log("Bleu comme dans Vaïana et son bleu lumière");
+        break;
+    case "noir":
+    case "gris":
+        console.log("Étrangement, cette couleur est vraiment monotone");
         break;
     default:
         console.log("Impossible de décoder votre couleur");
