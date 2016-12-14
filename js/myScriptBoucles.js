@@ -6,7 +6,6 @@
  */
 
 
-
 /* Syntaxe d'une boucle WHILE (tant que)
  * -------------------------------------------------------------
  * /!\ Afin d'éviter une boucle infini et donc irrémédiablement 
