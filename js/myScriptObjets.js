@@ -84,9 +84,38 @@ dog.aboie = function(number) {
 
 dog.aboie(7);
 
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
+/* Exercice : 1/2
+ * -----------------------------------------------------------------------------------------------------
+ * Concevoir un objet de type Voiture, afficher que cette voiture dispose de plusieurs propriétés
+ * la faire rouler via une méthode.
+ * -----------------------------------------------------------------------------------------------------
+ * Exercice : 2/2
+ * -----------------------------------------------------------------------------------------------------
+ * Créer un objet équipe seniors 3 et afficher simplement le contenu de l'objet avec une boucle for.
+ * -----------------------------------------------------------------------------------------------------
+ */  
+
+console.log("--------------------------------------- Exercice 1");
+var voiture = {
+    marque: "Renault",
+    roue: 5,
+    porte: 5,
+    couleur: "beige-cendré",
+    carburant: "essence",
+    rouler: function(){
+        console.log("Vroum vroum")
+    }
+};
+
+console.log(voiture);
+voiture.rouler();
+
+console.log("--------------------------------------- Exercice 2");
+var seniors3 = new Object();
+    seniors3.poste = ["arrière", "Demie", "Gardien", "Aillier", "Pivot"];
+    seniors3.nom = ["Maxime", "Maxime", "Fabien", "Arnaud", "Thibault", "Alain"];
+    seniors3.club = "USM Meyzieu";
+
+for ( var result in seniors3 ) {
+    console.log(seniors3[result]);
+}
