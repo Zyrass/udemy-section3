@@ -5,20 +5,24 @@ window.onload = function() {
      * Définition des variables Globale
      * ===========================================================================================
      * var canvasWidth = 900;   [Définition de la largeur du canvas]
-     * var canvasHeigth = 600;  [Définition de la hauteur du canvas]
+     * var canvasHeight = 600;  [Définition de la hauteur du canvas]
      * var blockSize = 20;      [Définition de la taille de chaque block]
      * var context;             [Définition du contexte du dessin]
      * var delay = 100;         [Définition du délai]
      * var snakee;              [Définition du serpent]
      * var apple;               [Définition de la pomme]
+     * var widthInBlocks        [Définition de la largeur d'un block]
+     * var heightInBlocks       [Définition de la hauteur d'un block]
      */
     var canvasWidth = 900;
-    var canvasHeigth = 600;
+    var canvasHeight = 600;
     var blockSize = 20;
     var context;
     var delay = 100;
     var snakee;
     var apple;
+    var widthInBlocks;
+    var heightInBlocks;
 
     /* ===========================================================================================
      * [Exécution de la déclaration permettant l'initialisation du jeu]
@@ -37,7 +41,7 @@ window.onload = function() {
      *      ----- [On spécifie ici, la largeur du canvas] ----- 
      *    canvas.width = canvasWidth;
      *      ----- [Définition de la hauteur du canvas] -----
-     *    canvas.height = canvasHeigth;
+     *    canvas.height = canvasHeight;
      *      ----- [Définition de la bordure. /!\ De base la bordure est de couleur noir] -----
      *    canvas.style.border = "1px solid";
      *      ----- [On accroche ici au body le canvas] -----
@@ -58,7 +62,7 @@ window.onload = function() {
     {
         var canvas = document.createElement('canvas');
         canvas.width = canvasWidth;
-        canvas.height = canvasHeigth;
+        canvas.height = canvasHeight;
         canvas.style.border = "1px solid";
         document.body.appendChild(canvas);
         context = canvas.getContext('2d');
@@ -74,7 +78,7 @@ window.onload = function() {
      * {
      *      ----- [Définition de l'effacement de notre block] -----
      *      // 4 propriétés : (position gauche, position haut, largeur, hauteur);
-     *      context.clearRect(0,0, canvasWidth, canvasHeigth);
+     *      context.clearRect(0,0, canvasWidth, canvasHeight);
      *      ----- [Exécution de la fonction permettant au serpent d'avancer] ----- 
      *      snakee.advance();
      *      ----- [Exécution de la fonction permettant de dessiner le serpent dans le canvas] -----
@@ -87,11 +91,12 @@ window.onload = function() {
      */
     function refreshCanvas()
     {
-        context.clearRect(0,0,canvasWidth,canvasHeigth);
         snakee.advance();
+        context.clearRect(0,0,canvasWidth,canvasHeight);
         snakee.draw();
         apple.draw();
         setTimeout(refreshCanvas, delay);
+        
     } // Fin function refreshCanvas()
 
     /* ===========================================================================================
@@ -283,6 +288,38 @@ window.onload = function() {
                 this.direction = newDirection;
             } // Fin condition allowedDirection
         }; // Fin de la méthode this.setDirection
+        
+        //-----------------------------------------------------------------------------------
+        this.checkCollision = function()
+        {
+            var wallCollision = false;
+            var snakeCollision = false;
+            var headSnake = this.body[0];
+            var restSnake = this.body.slice(1);
+            var snakeX = head[0];
+            var snakeY = head[1];
+            var minX = 0;
+            var minY = 0;
+            var maxX = widthInBlocks - 1;
+            var maxY = heightInBlocks -1;
+            var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
+            var isNotBetweenVerticalWalls = snakeY < minY || snakeY > maxY;
+
+            if (isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls) {
+                wallCollision = true;
+            }
+
+            for ( var i = 0; i < restSnake.length; i++) {
+                if ( snakeX === restSnake[i][0] && snakeY === restSnake[i][1])
+                {
+                    snakeCollision = true;
+                }                    
+            }
+
+            return wallCollision || snakeCollision;
+
+
+        }; // Fin de la méthode this.checkCollision
 
     } // Fin de la function Snake
 
