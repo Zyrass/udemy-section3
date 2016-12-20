@@ -11,8 +11,6 @@ window.onload = function() {
      * var delay = 100;         [Définition du délai]
      * var snakee;              [Définition du serpent]
      * var apple;               [Définition de la pomme]
-     * var widthInBlocks        [Définition de la largeur d'un block]
-     * var heightInBlocks       [Définition de la hauteur d'un block]
      */
     var canvasWidth = 900;
     var canvasHeight = 600;
@@ -21,8 +19,8 @@ window.onload = function() {
     var delay = 100;
     var snakee;
     var apple;
-    var widthInBlocks;
-    var heightInBlocks;
+    var widthInBlocks = canvasWidth / blockSize;
+    var heightInBlocks = canvasHeight / blockSize;
 
     /* ===========================================================================================
      * [Exécution de la déclaration permettant l'initialisation du jeu]
@@ -53,7 +51,7 @@ window.onload = function() {
      *    snakee = new Snake([[6,4], [5,4], [4,4]], "right");
      *      ----- [Définition de l'apparition de la pomme] -----
      *      // [axe x, axe y]
-     *   apple = new Pomme([10, 10]);
+     *    apple = new Pomme([10, 10]);
      *      ----- [Exécution de la fonction permettant un rafraîchissement du jeu] -----
      *    refreshCanvas();
      * }
@@ -92,10 +90,18 @@ window.onload = function() {
     function refreshCanvas()
     {
         snakee.advance();
-        context.clearRect(0,0,canvasWidth,canvasHeight);
-        snakee.draw();
-        apple.draw();
-        setTimeout(refreshCanvas, delay);
+
+        if ( snakee.checkCollision())
+        {
+            // GAME OVER
+        }
+        else
+        {
+            context.clearRect(0,0,canvasWidth,canvasHeight);
+            snakee.draw();
+            apple.draw();
+            setTimeout(refreshCanvas, delay);
+        }
         
     } // Fin function refreshCanvas()
 
@@ -294,32 +300,33 @@ window.onload = function() {
         {
             var wallCollision = false;
             var snakeCollision = false;
-            var headSnake = this.body[0];
-            var restSnake = this.body.slice(1);
+            var head = this.body[0];
+            var rest = this.body.slice(1);
             var snakeX = head[0];
             var snakeY = head[1];
             var minX = 0;
             var minY = 0;
-            var maxX = widthInBlocks - 1;
+            var maxX = widthInBlocks -1;
             var maxY = heightInBlocks -1;
             var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX;
             var isNotBetweenVerticalWalls = snakeY < minY || snakeY > maxY;
 
-            if (isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls) {
+            if ( isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls )
+            {
                 wallCollision = true;
             }
 
-            for ( var i = 0; i < restSnake.length; i++) {
-                if ( snakeX === restSnake[i][0] && snakeY === restSnake[i][1])
+            for ( var i = 0; i < rest.length; i++ ) 
+            {
+                if ( snakeX === rest[i][0] && snakeY === rest[i][1] )
                 {
                     snakeCollision = true;
-                }                    
+                }
             }
 
-            return wallCollision || snakeCollision;
+            return wallCollision ||snakeCollision;
 
-
-        }; // Fin de la méthode this.checkCollision
+        };
 
     } // Fin de la function Snake
 
