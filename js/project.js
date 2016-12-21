@@ -4,23 +4,29 @@ window.onload = function() {
     /* ===========================================================================================
      * Définition des variables Globale
      * ===========================================================================================
-     * var canvasWidth = 900;   [Définition de la largeur du canvas]
-     * var canvasHeight = 600;  [Définition de la hauteur du canvas]
-     * var blockSize = 20;      [Définition de la taille de chaque block]
-     * var context;             [Définition du contexte du dessin]
-     * var delay = 100;         [Définition du délai]
-     * var snakee;              [Définition du serpent]
-     * var apple;               [Définition de la pomme]
+     * var canvasWidth = 900;                           [Définition de la largeur du canvas]
+     * var canvasHeight = 600;                          [Définition de la hauteur du canvas]
+     * var blockSize = 20;                              [Définition de la taille de chaque block]
+     * var context;                                     [Définition du contexte du dessin]
+     * var delay = 100;                                 [Définition du délai]
+     * var snakee;                                      [Définition du serpent]
+     * var apple;                                       [Définition de la pomme]
+     * var widthInBlocks = canvasWidth / blockSize;     [Définition de la largeur d'un block]
+     * var heightInBlocks = canvasHeight / blockSize;   [Définition de la hauteur d'un block]
+     * var score;                                       [Définition du score]
+    var score;
+    
      */
     var canvasWidth = 900;
     var canvasHeight = 600;
-    var blockSize = 20;
+    var blockSize = 30;
     var context;
     var delay = 100;
     var snakee;
     var apple;
     var widthInBlocks = canvasWidth / blockSize;
     var heightInBlocks = canvasHeight / blockSize;
+    var score;
 
     /* ===========================================================================================
      * [Exécution de la déclaration permettant l'initialisation du jeu]
@@ -52,6 +58,8 @@ window.onload = function() {
      *      ----- [Définition de l'apparition de la pomme] -----
      *      // [axe x, axe y]
      *    apple = new Pomme([10, 10]);
+     *      ----- [Définition du score] -----
+     *    score = 0;
      *      ----- [Exécution de la fonction permettant un rafraîchissement du jeu] -----
      *    refreshCanvas();
      * }
@@ -66,6 +74,7 @@ window.onload = function() {
         context = canvas.getContext('2d');
         snakee = new Snake([[6,4], [5,4], [4,4]], "right");
         apple = new Pomme([10, 10]);
+        score = 0;
         refreshCanvas();
     } // Fin function init()
     
@@ -93,17 +102,51 @@ window.onload = function() {
 
         if ( snakee.checkCollision())
         {
-            // GAME OVER
+            gameOver();
         }
         else
         {
+            if(snakee.isEatingApple(apple))
+            {
+                score++;
+                snakee.ateApple = true;
+                do
+                {
+                    apple.setNewPosition();
+                }
+                while(apple.isOnSnake(snakee))
+            }
             context.clearRect(0,0,canvasWidth,canvasHeight);
             snakee.draw();
             apple.draw();
+            drawScore();
             setTimeout(refreshCanvas, delay);
         }
         
     } // Fin function refreshCanvas()
+
+    function gameOver()
+    {
+        context.save();
+        context.fillText("Game Over", 5, 15);
+        context.fillText("Appuyer sur la touche Espace pour rejouer", 5, 30);
+        context.restore();
+    }
+
+    function restart()
+    {
+        snakee = new Snake([[6,4], [5,4], [4,4]], "right");
+        apple = new Pomme([10, 10]);
+        score = 0;
+        refreshCanvas();
+    }
+
+    function drawScore()
+    {
+        context.save();
+        context.fillText(score.toString(), 5, canvasHeight - 5);
+        context.restore();
+    }
 
     /* ===========================================================================================
      * [Déclaration de notre fonction permettant de dessiner les block du serpent]
@@ -233,6 +276,7 @@ window.onload = function() {
     {
         this.body = body;
         this.direction = direction;
+        this.ateApple = false;
         this.draw = function() 
         {
             context.save();
@@ -269,7 +313,14 @@ window.onload = function() {
                     throw("Invalid Direction");
             } // Fin boucle switch(this.direction)
             this.body.unshift(nextPosition);
-            this.body.pop();
+            if( !this.ateApple )
+            {
+                this.body.pop();
+            }
+            else
+            {
+                this.ateApple = false;
+            }
         }; // Fin de la méthode this.advance...
         this.setDirection = function(newDirection)
         {
@@ -295,7 +346,6 @@ window.onload = function() {
             } // Fin condition allowedDirection
         }; // Fin de la méthode this.setDirection
         
-        //-----------------------------------------------------------------------------------
         this.checkCollision = function()
         {
             var wallCollision = false;
@@ -326,6 +376,18 @@ window.onload = function() {
 
             return wallCollision ||snakeCollision;
 
+        };
+        this.isEatingApple = function(appleToEat)
+        {
+            var head = this.body[0];
+            if ( head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1] )
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
         };
 
     } // Fin de la function Snake
@@ -374,12 +436,31 @@ window.onload = function() {
             context.fillStyle = "#33cc33";
             context.beginPath();
             var radius = blockSize/2;
-            var x = position[0]*blockSize + radius;
-            var y = position[1]*blockSize + radius;
+            var x = this.position[0]*blockSize + radius;
+            var y = this.position[1]*blockSize + radius;
             context.arc(x,y, radius, 0, Math.PI*2, true);
             context.fill();
             context.restore();
         }; // Fin de la méthode this.draw
+        this.setNewPosition = function()
+        {
+            var newX = Math.round(Math.random() * (widthInBlocks - 1));
+            var newY = Math.round(Math.random() * (heightInBlocks - 1));
+            this.position = [newX, newY];
+        };
+        this.isOnSnake = function(snakeToCheck)
+        {
+            var isOnSnake = false;
+
+            for (var i = 0; i < snakeToCheck.body.length; i++)
+            {
+                if (this.position[0] === snakeToCheck.body[i][0] && this.position[1] === snakeToCheck.body[i][1] )
+                {
+                    isOnSnake = true;
+                }
+            }
+            return isOnSnake;
+        };
     } // Fin de la fonction Pomme
 
 
@@ -415,6 +496,11 @@ window.onload = function() {
      *              newDirection = "down";
      *              break;
      * 
+     *          // 32 correspond à la touche Espace du clavier 
+     *          case 32:
+     *              restart(); // On lance la fonction restart
+     *              return;
+     * 
      *          // default étant la touche par défault. Sauf ici on annule la touche si elle n'est pas correcte
      *          default:
      *              return;
@@ -441,6 +527,10 @@ window.onload = function() {
             case 40:
                 newDirection = "down";
                 break;
+
+            case 32:
+                restart();
+                return;
 
             default: 
                 return;
